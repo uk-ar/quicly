@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Setup Perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          node-version: '12.x'
+
+      - name: Setup dependencies
+        run: cpanm --installdeps --notest --sudo .
+
+      - name: Configure
+        run: cmake .
+
+      - name: Build
+        run: make
+
+      - name: Unit tests
+        run: make check
